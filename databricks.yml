@@ -1,0 +1,51 @@
+bundle:
+  name: trend-micro-demo
+
+resources:
+  jobs:
+    Trend_Micro_Prediction_Dashboard:
+      name: Trend Micro Prediction Dashboard from DAB
+      tasks:
+        - task_key: Insert_Prediction_Results
+          sql_task:
+            query:
+              query_id: 606afbc3-5d8c-4285-a7b4-b0d8069bbe8d
+            warehouse_id: 5ab5dda58c1ea16b
+        - task_key: Report_Trend_Micro_Rate
+          depends_on:
+            - task_key: Insert_Prediction_Results
+          sql_task:
+            query:
+              query_id: a47e216f-5067-476a-ade4-ef69874e2665
+            warehouse_id: 5ab5dda58c1ea16b
+        - task_key: Report_Trend_Micro_Threshold
+          depends_on:
+            - task_key: Insert_Prediction_Results
+          sql_task:
+            query:
+              query_id: 66f1ff98-0b58-45e1-8014-8579483715da
+            warehouse_id: 5ab5dda58c1ea16b
+        - task_key: Report_Trend_Micro_bar
+          depends_on:
+            - task_key: Insert_Prediction_Results
+          sql_task:
+            query:
+              query_id: f45443eb-d51e-4fd1-9519-c4b769ce9b39
+            warehouse_id: 5ab5dda58c1ea16b
+        - task_key: Prediction_Dashboard
+          depends_on:
+            - task_key: Report_Trend_Micro_Rate
+            - task_key: Report_Trend_Micro_Threshold
+            - task_key: Report_Trend_Micro_bar
+          sql_task:
+            dashboard:
+              dashboard_id: 1f4e318c-95c8-4003-a6c8-41cec2a925b7
+              subscriptions:
+                - user_name: shirley.wang@databricks.com
+              custom_subject: Trend micro dashboard is newly updated
+            warehouse_id: 475b94ddc7cd5211
+
+targets:
+  development:
+    workspace:
+      host: https://e2-demo-field-eng.cloud.databricks.com/
